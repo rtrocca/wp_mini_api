@@ -5,6 +5,6 @@ setup(name='wp_mini_api',
     packages=find_packages(),
     install_requires=[
         'requests>=2.25',
-        'slugify'
+        'python-slugify'
     ]
 )
