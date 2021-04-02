@@ -4,6 +4,7 @@ setup(name='wp_mini_api',
     description='A mini API to communicate with WordPress',
     packages=find_packages(),
     install_requires=[
+        'requests>=2.25',
         'slugify'
     ]
 )
