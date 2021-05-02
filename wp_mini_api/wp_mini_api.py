@@ -161,8 +161,8 @@ class WP_Site:
         url = self.get_tags_api_url()
         headers = self.get_headers()
         pairs = []
-        for keyword in keywords_dict.keys():
-            value = keywords_dict[keyword]
+        for keyword in tags.keys():
+            value = tags[keyword]
             print(keyword)
             if type(value) == list:
                 value = value[0]
