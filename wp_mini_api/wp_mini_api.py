@@ -78,10 +78,21 @@ class WP_Site:
         #print('Request params', params)
 
         r = requests.get(self.__posts_url, params=params, headers=self.__headers)
+        # News from 7/18/2022 when matching posts cannot be found the API returns a 403.
+        # TODO: fix it
         #print(r.status_code)
         #print(r.text)
-        posts = json.loads(r.text)
-        return posts
+        try:
+            posts = json.loads(r.text)
+            return posts
+        except:
+            print("Error loading posts", r.text)
+            print("filters", filters)
+            print("posts_url", self.__posts_url)
+            print("params", params)
+            print("headers", self.__headers)
+            #raise Exception("Error loading posts")
+            return []
 
     def update_post(self, id, update):
         r = requests.put(self.__posts_url + '/' + str(id), json=update, headers=self.__headers)
@@ -101,8 +112,8 @@ class WP_Site:
         ----------
 
         categories_dict dictionary whose keys become the site categories
-        
-        ''' 
+
+        '''
         url = self.get_categories_api_url()
         headers = self.get_headers()
         pairs = []
@@ -157,12 +168,12 @@ class WP_Site:
 
         tags array of strings that will become the site tags
         '''
-        
+
         url = self.get_tags_api_url()
         headers = self.get_headers()
         pairs = []
-        for keyword in tags.keys():
-            value = tags[keyword]
+        for keyword in keywords_dict.keys():
+            value = keywords_dict[keyword]
             print(keyword)
             if type(value) == list:
                 value = value[0]
