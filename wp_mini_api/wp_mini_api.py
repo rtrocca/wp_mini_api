@@ -87,6 +87,10 @@ class WP_Site:
         r = requests.put(self.__posts_url + '/' + str(id), json=update, headers=self.__headers)
         return r.ok
 
+    def delete_post(self, id):
+        r = requests.delete(self.__posts_url + '/' + str(id), headers=self.__headers)
+        return r.ok
+
     def save_post(self, post_data):
         r = requests.post(self.__posts_url, json=post_data, headers=self.__headers)
         return r
