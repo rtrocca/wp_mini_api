@@ -23,11 +23,13 @@ class WP_Site:
         self.__user_password = user_password
         self.__site = site
         self.__headers = self.__make_headers()
-        self.__base_api_url = self.__site + '/wp-json/wp/v2/'
+        self.__root = self.__site + '/wp-json'
+        self.__base_api_url = self.__root + '/wp/v2/'
         self.__posts_url = self.__base_api_url + 'posts'
         self.__tags_url = self.__base_api_url + 'tags'
         self.__categories_url = self.__base_api_url + 'categories'
         self.__media_url = self.__base_api_url + 'media'
+        self.__batch_url = self.__root + '/batch/v1'
 
     def __make_auth_header(self):
         user = base64.standard_b64encode((self.__user_name + ':' + self.__user_password).encode('utf-8'))
@@ -83,6 +85,10 @@ class WP_Site:
         posts = json.loads(r.text)
         return posts
 
+    def get_max_batch(self):
+        r = requests.options(self.__batch_url, headers=self.__headers)
+        return r.json()
+    
     def update_post(self, id, update):
         r = requests.put(self.__posts_url + '/' + str(id), json=update, headers=self.__headers)
         return r.ok
@@ -209,7 +215,6 @@ class WP_Site:
         else:
             return None
 
-
     def post_image(self, fileData):
         #headers={ 'Content-Type': 'image/jpg','Content-Disposition' : 'attachment; filename=%s'% fileName},
         # this function will modify the headers dict
@@ -220,6 +225,11 @@ class WP_Site:
         r = requests.post(media_url, data=io.BytesIO(fileData),headers=headers)
         return r
 
+    def batch_delete(self, post_ids):
+        batch_requests = [ {'method': 'DELETE', 'path':  '/wp-json/wp/v2/posts/' + str(id), 'headers': self.__headers} for id in post_ids]
+        r= requests.post(self.__batch_url, json={'requests': batch_requests})
+        return r
+
 if __name__ == '__main__':
     wp_site = WP_Site(user_name, user_password, site)
     print('Tags:')
@@ -227,7 +237,3 @@ if __name__ == '__main__':
     print('\r\nCategories:')
     print(wp_site.get_categories())
     #print(wp_site.get_posts(limit=1))
-
-#%%print('ciao')
-
-# %%
